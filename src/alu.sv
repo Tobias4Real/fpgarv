@@ -31,7 +31,7 @@
 `define _RV32M_
 
 module alu #(
-    parameter ENABLE_RV32_M = 0
+    parameter logic EnableRv32M = 0
 ) (
     input [5:0] S,
     input [31:0] A,
@@ -51,6 +51,7 @@ module alu #(
             `ALU_S_AND: Q = A & B;
             `ALU_S_OR:  Q = A | B;
             `ALU_S_XOR: Q = A ^ B;
+            default;
         endcase
 
         unique0 case (S[5:1])
@@ -63,6 +64,7 @@ module alu #(
             // Comparison operations (Result stored in R_rd)
             `ALU_S_SLT:  Q = lt;
             `ALU_S_SLTU: Q = ltu;
+            default;
         endcase
 
         unique0 case (S[4:0])
@@ -73,12 +75,14 @@ module alu #(
             `ALU_S_GE:  CMP = !lt;
             `ALU_S_LTU: CMP = ltu;
             `ALU_S_GEU: CMP = !ltu;
+            default;
         endcase
 
         unique0 casez (S)
             // Arithmetic operations
             `ALU_S_ADD, `ALU_S_ADDI: Q = A + B;
             `ALU_S_SUB: Q = A - B;
+            default;
         endcase
     end
 endmodule

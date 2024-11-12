@@ -10,7 +10,7 @@ module trafficlight (
     reg  ctl_res;
 
     timekeeper #(
-        .WAIT(8)
+        .Wait(8)
     ) tk (
         .clk (clk),
         .tick(tk_tick),

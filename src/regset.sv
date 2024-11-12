@@ -2,8 +2,8 @@
 
 // Register Set that prioritizes reset over write
 module regset #(
-    parameter REGISTER_COUNT = `REGISTER_COUNT,
-    parameter ENABLE_RESET   = 0
+    parameter int   RegisterCount = `REGISTER_COUNT,
+    parameter logic EnableReset   = 0
 ) (
     input word write,
     input regnum write_reg,
@@ -16,15 +16,15 @@ module regset #(
     input clk
 );
 
-    word regset[REGISTER_COUNT-1:1];
+    word regset[RegisterCount-1:1];
 
     assign q0 = (q0_reg == 0) ? 0 : regset[q0_reg];
     assign q1 = (q1_reg == 0) ? 0 : regset[q1_reg];
 
     always @(posedge clk) begin
-        if (ENABLE_RESET) begin
+        if (EnableReset) begin
             if (res) begin
-                for (integer i = 0; i < REGISTER_COUNT; i += 1) begin
+                for (integer i = 0; i < RegisterCount; i += 1) begin
                     regset[i] <= 0;
                 end
             end else if (write_enable && write_reg != 0) begin

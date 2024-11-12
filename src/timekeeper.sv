@@ -1,9 +1,9 @@
 `include "definitions.svh"
 
 module timekeeper #(
-    parameter word FREQUENCY = 2,  // FREQUENCY IN HERTZ
-    parameter word TIME = 5,  // TIME IN SECONDS
-    parameter word WAIT = FREQUENCY * TIME
+    parameter int Frequency = 2,  // Frequency in hertz
+    parameter int Time = 5,  // Time in seconds
+    parameter word Wait = Frequency * Time
 ) (
     input clk,
     input wire res,
@@ -17,7 +17,7 @@ module timekeeper #(
             tick  <= 0;
         end else begin
             timer <= timer + 1;
-            if (timer == WAIT - 1) begin
+            if (timer == Wait - 1) begin
                 tick <= 1;
             end
         end
