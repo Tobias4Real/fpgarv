@@ -18,7 +18,7 @@ module ctrl_trafficlight (
         endcase
     end
 
-    always @(posedge clk) begin
+    always_ff @(posedge clk) begin
         if (res == 1) begin
             state <= 0;
             cntr_reset <= 1;

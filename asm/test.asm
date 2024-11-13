@@ -192,7 +192,6 @@ main:
     bne x16, x0, fail
 
     j success
-
 end:
     # Exit the program
 

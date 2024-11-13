@@ -32,6 +32,9 @@ module regset #(
             end
         end else if (write_enable && write_reg != 0) begin
             regset[write_reg] <= write;
+`ifdef DEBUG
+            $display("write (%0d) in (x%2d)", $signed(write), write_reg);
+`endif
         end
     end
 

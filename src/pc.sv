@@ -11,10 +11,13 @@ module pc #(
     input mode
 );
 
-    always @(posedge clk, posedge res) begin
-        if (res) begin
-            pc <= InitAddr;
-        end else if (enable) begin
+    always @(posedge res) begin
+        pc <= InitAddr;
+    end
+
+    always @(posedge clk) begin
+
+        if (enable) begin
             if (mode == `PC_MODE_INCREMENT) begin
                 pc <= pc + `INSTRUCTION_SIZE_IN_BYTES;
             end else if (mode == `PC_MODE_JUMP) begin

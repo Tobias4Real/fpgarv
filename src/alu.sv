@@ -1,3 +1,5 @@
+`include "definitions.svh"
+
 // Arithmetic operations
 `define ALU_S_ADDI 6'b?00000
 
@@ -6,13 +8,13 @@
 `define ALU_S_SUB 6'b100001
 
 // Comparison operations (Result stored in R_rd)
-`define ALU_S_SLT 6'b00100
-`define ALU_S_SLTU 6'b00110
+`define ALU_S_SLT 4'b0100
+`define ALU_S_SLTU 4'b0110
 
 // Logical operations
-`define ALU_S_AND 6'b1110
-`define ALU_S_OR 6'b1100
-`define ALU_S_XOR 6'b1000
+`define ALU_S_AND 4'b1110
+`define ALU_S_OR 4'b1100
+`define ALU_S_XOR 4'b1000
 
 // Shift operations
 `define ALU_S_SLL 6'b00010
@@ -28,61 +30,61 @@
 `define ALU_S_GEU 6'b11111
 
 `define _RV32M_ALU_S_ 000001
-`define _RV32M_
 
 module alu #(
     parameter logic EnableRv32M = 0
 ) (
-    input [5:0] S,
-    input [31:0] A,
-    input [31:0] B,
-    output reg CMP,
-    output reg [31:0] Q
+    input [5:0] ctrl,
+    input word a,
+    input word b,
+    output reg cmp,
+    output word result
 );
-    wire ltu = $unsigned(A) < $unsigned(B);
-    wire lt = $signed(A) < $signed(B);
-    wire eq = A == B;
+    wire ltu = $unsigned(a) < $unsigned(b);
+    wire lt = $signed(a) < $signed(b);
+    wire eq = a == b;
     always_comb begin
-        Q   = 32'd0;
-        CMP = 1'd0;
+        result = 32'd0;
+        cmp = 1'd0;
 
-        // Logical operations
-        unique0 case (S[4:1])
-            `ALU_S_AND: Q = A & B;
-            `ALU_S_OR:  Q = A | B;
-            `ALU_S_XOR: Q = A ^ B;
+        // Logical operations / SLT(U)
+        unique0 case (ctrl[4:1])
+            `ALU_S_AND: result = a & b;
+            `ALU_S_OR:  result = a | b;
+            `ALU_S_XOR: result = a ^ b;
+
+            `ALU_S_SLT:  result = lt;
+            `ALU_S_SLTU: result = ltu;
+
             default;
         endcase
 
-        unique0 case (S[5:1])
+        unique0 case (ctrl[5:1])
             // Shift operations
 
-            `ALU_S_SLL: Q = A << B[4:0];
-            `ALU_S_SRL: Q = A >> B[4:0];
-            `ALU_S_SRA: Q = $signed(A) >>> B[4:0];
-
-            // Comparison operations (Result stored in R_rd)
-            `ALU_S_SLT:  Q = lt;
-            `ALU_S_SLTU: Q = ltu;
+            `ALU_S_SLL: result = a << b[4:0];
+            `ALU_S_SRL: result = a >> b[4:0];
+            `ALU_S_SRA: result = $signed(a) >>> b[4:0];
             default;
         endcase
 
-        unique0 case (S[4:0])
+        unique0 case (ctrl[4:0])
             // Compare operations (Result stored in CMP)
-            `ALU_S_EQ:  CMP = eq;
-            `ALU_S_NE:  CMP = !eq;
-            `ALU_S_LT:  CMP = lt;
-            `ALU_S_GE:  CMP = !lt;
-            `ALU_S_LTU: CMP = ltu;
-            `ALU_S_GEU: CMP = !ltu;
+            `ALU_S_EQ:  cmp = eq;
+            `ALU_S_NE:  cmp = !eq;
+            `ALU_S_LT:  cmp = lt;
+            `ALU_S_GE:  cmp = !lt;
+            `ALU_S_LTU: cmp = ltu;
+            `ALU_S_GEU: cmp = !ltu;
             default;
         endcase
 
-        unique0 casez (S)
+        unique0 casez (ctrl)
             // Arithmetic operations
-            `ALU_S_ADD, `ALU_S_ADDI: Q = A + B;
-            `ALU_S_SUB: Q = A - B;
+            `ALU_S_ADD, `ALU_S_ADDI: result = a + b;
+            `ALU_S_SUB: result = a - b;
             default;
         endcase
+
     end
 endmodule

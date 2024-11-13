@@ -12,11 +12,13 @@ module_testbenches["alu"]="alu_tb.sv"
 module_testbenches["pc"]="pc_tb.sv"
 module_testbenches["regset"]="regset_tb.sv"
 module_testbenches["timekeeper"]="timekeeper_tb.sv"
-module_testbenches["trafficlight"]="trafficlight_tb.sv"  # Added testbench for trafficlight.sv
+module_testbenches["trafficlight"]="trafficlight_tb.sv"
+module_testbenches["proc"]="proc_tb.sv"
 
 # Define module dependencies
 declare -A module_dependencies
 module_dependencies["trafficlight"]="timekeeper.sv ctrl_trafficlight.sv"
+module_dependencies["proc"]="ctrl.sv alu.sv pc.sv regset.sv imm_gen.sv timekeeper.sv"
 
 # Parse command line arguments
 selected_modules=()
@@ -79,6 +81,7 @@ for module in "${modules_to_test[@]}"; do
             # Check if compilation was successful
             if [ $? -ne 0 ]; then
                 echo "Error: Compilation failed for $module with testbench $tb. Aborting."
+                rm -f "$output_file"
                 exit 1
             fi
 
@@ -89,10 +92,10 @@ for module in "${modules_to_test[@]}"; do
                 echo "$module test with $tb completed."
             else
                 echo "Error: Simulation failed for $module with testbench $tb. Aborting."
+                rm -f "$output_file"
                 exit 1
             fi
 
-            # Remove the output file after running
             rm -f "$output_file"
         else
             echo "Skipping $tb for $module: source or testbench file not found."
