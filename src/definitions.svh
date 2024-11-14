@@ -1,6 +1,6 @@
 `ifndef DEFINITIONS_H_
 `define DEFINITIONS_H_
-`define DEBUG
+//`define DEBUG
 
 `define WORD_SIZE 32
 `define INSTRUCTION_SIZE_IN_BYTES 4

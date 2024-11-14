@@ -32,7 +32,6 @@ module proc_tb ();
 
     int  pm_fetch_state = 0;
     word pm_fetch_addr;
-    word last_pm_fetch_addr;
 
     always_ff @(posedge clk) begin
         if (instr_req == 0) begin
@@ -74,7 +73,7 @@ module proc_tb ();
         #2;
         res = 0;
 
-        $readmemh("asm/test.mem", program_memory);
+        $readmemh("test.mem", program_memory);
         #1000000;
         $display("Out of time. What happened?");
         $finish;
