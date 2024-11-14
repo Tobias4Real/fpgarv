@@ -4,7 +4,7 @@
 `define ALU_SRC_IMMEDIATE 1
 `define ALU_SRC_NONIMMEDIATE 0
 
-`define START_STATE 4'd0
+`define INITIAL_STATE 4'd0
 `define OP_STATE 4'd1
 `define OP_IMM_STATE 4'd2
 `define LUI_STATE 4'd3
@@ -56,10 +56,12 @@ module ctrl (
         immediatetoreg = 0;
         alusrc_pc = 0;
 
-        if (is_end_state) pc_enable = 1;
+        if (is_end_state) begin
+            pc_enable = 1;
+        end
 
         unique casez (state)
-            `START_STATE: instr_req = 1;
+            `INITIAL_STATE: instr_req = 1;
             `BRANCH_STATE: begin
                 alusrc = `ALU_SRC_NONIMMEDIATE;
             end
@@ -86,10 +88,10 @@ module ctrl (
 
     always_ff @(posedge clk) begin
         if (res) begin
-            state <= `START_STATE;
+            state <= `INITIAL_STATE;
             processing <= 0;
             is_end_state <= 0;
-        end else if (state == `START_STATE && instr_valid == 1) begin
+        end else if (state == `INITIAL_STATE && instr_valid == 1) begin
             unique case (instr_read[6:2])
                 `ISA_OPMAP_OP_IMM: state <= `OP_IMM_STATE;
                 `ISA_OPMAP_OP: state <= `OP_STATE;
@@ -109,7 +111,7 @@ module ctrl (
             processing   <= 0;
             is_end_state <= 1;
         end else if (is_end_state) begin
-            state <= `START_STATE;
+            state <= `INITIAL_STATE;
             is_end_state <= 0;
         end else begin
             tk_res <= 0;

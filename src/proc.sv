@@ -26,7 +26,10 @@ module proc (
     input logic irq_ack,
     input logic [4:0] irq_ack_id
 );
-    word  immediate;
+
+    instr_t instr_cache;
+
+    word immediate;
 
     logic ctrl_alusrc_pc;
     logic ctrl_branch;
@@ -36,10 +39,10 @@ module proc (
     logic ctrl_immediatetoreg;
 
     logic alu_cmp;
-    word  alu_result;
+    word alu_result;
 
-    word  regset_q0;
-    word  regset_q1;
+    word regset_q0;
+    word regset_q1;
 
     logic pc_enable;
 
@@ -84,9 +87,9 @@ module proc (
 
         .write(regset_write),
         .write_enable(ctrl_regwrite),
-        .write_reg(instr_read[11:7]),
-        .q0_reg(instr_read[19:15]),
-        .q1_reg(instr_read[24:20]),
+        .write_reg(instr_cache[11:7]),
+        .q0_reg(instr_cache[19:15]),
+        .q1_reg(instr_cache[24:20]),
         .q0(regset_q0),
         .q1(regset_q1)
     );
@@ -96,7 +99,7 @@ module proc (
     word alu_input_a;
     assign alu_input_a = ctrl_alusrc_pc ? instr_addr : regset_q0;
     assign alu_input_b = ctrl_alusrc ? immediate : regset_q1;
-    assign alu_ctrl = ctrl_alusrc_pc ? 0 : {instr_read[30], instr_read[14:12], instr_read[6:5]};
+    assign alu_ctrl = ctrl_alusrc_pc ? 0 : {instr_cache[30], instr_cache[14:12], instr_cache[6:5]};
 
     alu proc_alu (
         .ctrl(alu_ctrl),
@@ -108,20 +111,22 @@ module proc (
     );
 
     imm_gen proc_imm_gen (
-        .inst(instr_read),
+        .inst(instr_cache),
         .immediate(immediate)
     );
 
-
     always_ff @(posedge clk) begin
+        if (instr_valid === 1) begin
+            instr_cache <= instr_read;
+        end
+
 `ifdef DEBUG
-        $display("(instr: %0h, a: %0d b: %0d, ctrl: %6b, pc: %8h, imm: %0d)", instr_read,
+        $display("(instr: %0h, a: %0d b: %0d, ctrl: %6b, pc: %8h, imm: %0d)", instr_cache,
                  $signed(alu_input_a), $signed(alu_input_b), alu_ctrl, instr_addr, immediate);
 `endif
 
         if (alu_cmp === 1 && pc_enable) begin
-            $error("Failure!! (instr: %0h, a: %0d b: %0d, pc: %8h)", instr_read,
-                   $signed(alu_input_a), $signed(alu_input_b), instr_addr);
+            $error("Failure!!");
             $fatal;
         end
     end

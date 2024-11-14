@@ -1,6 +1,6 @@
 `include "definitions.svh"
 
-`define PM_FETCH_DELAY 50
+`define PM_FETCH_DELAY 1
 `define PM_SIZE 304
 
 module proc_tb ();
@@ -38,6 +38,7 @@ module proc_tb ();
         if (instr_req == 0) begin
             instr_valid <= 0;
             pm_fetch_state <= 0;
+            instr_read <= 0;
         end else if (pm_fetch_state == 0 && instr_req == 1) begin
 `ifdef DEBUG
             $display("l %0d", instr_addr - `PC_INIT_ADDR);
