@@ -116,7 +116,7 @@ module proc (
     );
 
     always_ff @(posedge clk) begin
-        if (instr_valid === 1) begin
+        if (instr_valid == 1) begin
             instr_cache <= instr_read;
         end
 
@@ -125,14 +125,14 @@ module proc (
                  $signed(alu_input_a), $signed(alu_input_b), alu_ctrl, instr_addr, immediate);
 `endif
 
-        if (alu_cmp === 1 && pc_enable) begin
+        if (alu_cmp == 1 && pc_enable) begin
             $error("Failure!!");
             $fatal;
         end
     end
 
     always_comb begin
-        if (alu_cmp === 1) begin
+        if (alu_cmp == 1) begin
             //$error("Error at PC (address: %0h)!");
             //$fatal;
         end
