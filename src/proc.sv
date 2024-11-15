@@ -130,13 +130,4 @@ module proc (
             $fatal;
         end
     end
-
-    always_comb begin
-        if (alu_cmp == 1) begin
-            //$error("Error at PC (address: %0h)!");
-            //$fatal;
-        end
-
-    end
-
 endmodule
